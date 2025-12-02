@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Text.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
 
 namespace FiixV5Test;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         // Console.WriteLine("Hello, Fiix V5 API Test!");
         string? tenant = Environment.GetEnvironmentVariable("FIIX_TENANT");
@@ -16,22 +21,34 @@ class Program
 
         if (tenant == null || apiKey == null || accessKey == null || secretKey == null)
         {
+            // Console.Write
             Console.WriteLine("Fiix variables not available from command line.");
             System.Environment.Exit(-1);
         }
 
         // Create a new HTTP Client
-        HttpClient myFiixClient = new()
+        HttpClient myFiixClient = new HttpClient();
+
+        // Create a request body
+        FiixPing pingRequest = new FiixPing();
+        var myNewRequestContent = JsonSerializer.Serialize(pingRequest);
+
+        StringContent requestString = new StringContent(
+            myNewRequestContent,
+            Encoding.UTF8,
+            "application/json"
+        );
+
+        HttpRequestMessage myNewMessage = new ()
         {
-            BaseAddress = new Uri($"https://{tenant}.macmmms.com")
+            Content = requestString,
+            Method = HttpMethod.Post,
+            RequestUri = new Uri($"https://{tenant}.macmms.com/api/?service=cmms&appKey={apiKey}&accessKey={accessKey}&signatureMethod=HmacSHA256&signatureVersion=1")
         };
 
-        myFiixClient.DefaultRequestHeaders.Add("Content-type", "text/plain;charset=utf-8");
-        myFiixClient.DefaultRequestHeaders.Add("Authorization", FiixApiUtils.GenerateAuthSignature(tenant, apiKey, accessKey, secretKey));
+        HttpResponseMessage myResponse = await myFiixClient.SendAsync(myNewMessage);
+        var jsonResponse = await myResponse.Content.ReadAsStringAsync();
 
-
-
-        
-
+        Console.WriteLine(jsonResponse);
     }
 }
