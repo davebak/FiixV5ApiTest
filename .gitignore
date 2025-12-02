@@ -6,6 +6,9 @@
 # dotenv files
 .env
 
+# output files for debugging
+*output.txt
+
 # User-specific files
 *.rsuser
 *.suo
