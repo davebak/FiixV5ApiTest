@@ -8,7 +8,7 @@ public class FiixApiUtils
 {
     public static string GenerateAuthSignature(string tenant, string apiKey, string accessKey, string secretKey)
     {
-        string message = $"{tenant}.macmms.com/api/?appKey={apiKey}&accessKey={accessKey}&signatureMethod=HmacSHA256&signatureVersion=1";
+        string message = $"{tenant}.macmms.com/api/?service=cmms&appKey={apiKey}&accessKey={accessKey}&signatureMethod=HmacSHA256&signatureVersion=1";
         byte[] msgBytes = Encoding.UTF8.GetBytes(message);
         byte[] secretBytes = Encoding.UTF8.GetBytes(secretKey);
 
@@ -19,7 +19,6 @@ public class FiixApiUtils
             byte[] hashBytes = hmac.ComputeHash(msgBytes);
 
             // Convert the byte array to a lowercase hexadecimal string
-            // .NET 5+ has Convert.ToHexString. For older versions, see the note below.
             return Convert.ToHexString(hashBytes).ToLowerInvariant();
         }
     }

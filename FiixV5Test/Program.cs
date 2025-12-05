@@ -26,28 +26,32 @@ class Program
             System.Environment.Exit(-1);
         }
 
+        // Generate the auth signature
+        string myAuthSignature = FiixApiUtils.GenerateAuthSignature(tenant, apiKey, accessKey, secretKey);
+
         // Create a new HTTP Client
         HttpClient myFiixClient = new HttpClient();
 
         // Create a request body
-        FiixPing pingRequest = new FiixPing();
-        var myNewRequestContent = JsonSerializer.Serialize(pingRequest);
-
-        StringContent requestString = new StringContent(
+        FiixNewSampleAsset pingRequest = new FiixNewSampleAsset();
+        string myNewRequestContent = JsonSerializer.Serialize(pingRequest);
+        
+        StringContent requestContent = new StringContent(
             myNewRequestContent,
             Encoding.UTF8,
-            "application/json"
+            "text/plain"
         );
 
         HttpRequestMessage myNewMessage = new ()
         {
-            Content = requestString,
+            Content = requestContent,
             Method = HttpMethod.Post,
             RequestUri = new Uri($"https://{tenant}.macmms.com/api/?service=cmms&appKey={apiKey}&accessKey={accessKey}&signatureMethod=HmacSHA256&signatureVersion=1")
         };
+        myNewMessage.Headers.Add("Authorization", myAuthSignature);
 
         HttpResponseMessage myResponse = await myFiixClient.SendAsync(myNewMessage);
-        var jsonResponse = await myResponse.Content.ReadAsStringAsync();
+        string jsonResponse = await myResponse.Content.ReadAsStringAsync();
 
         Console.WriteLine(jsonResponse);
     }
