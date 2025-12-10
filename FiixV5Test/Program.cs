@@ -33,8 +33,8 @@ class Program
         HttpClient myFiixClient = new HttpClient();
 
         // Create a request body
-        FiixNewSampleAsset pingRequest = new FiixNewSampleAsset();
-        string myNewRequestContent = JsonSerializer.Serialize(pingRequest);
+        FiixFindAssets findRequest = new FiixFindAssets();
+        string myNewRequestContent = JsonSerializer.Serialize(findRequest);
         
         StringContent requestContent = new StringContent(
             myNewRequestContent,

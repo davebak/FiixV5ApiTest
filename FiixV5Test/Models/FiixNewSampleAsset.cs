@@ -8,7 +8,7 @@ namespace FiixV5Test;
 public record class FiixSampleAsset
 {
     [JsonPropertyName("strName")]
-    public string Name { get; } = "SampleAsset99";
+    public string Name { get; } = "SampleAsset3000";
     [JsonPropertyName("strCode")]
     public string Code { get; } = "SampleCode99";
     [JsonPropertyName("className")]
